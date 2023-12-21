@@ -1,0 +1,205 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class Movie {
+    private String movieId;
+    private String title;
+
+    public Movie(String movieId, String title) {
+        this.movieId = movieId;
+        this.title = title;
+    }
+
+    public String getMovieId() {
+        return movieId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+}
+
+class Showtime {
+    private String showtimeId;
+    private Movie movie;
+    private String time;
+    private int availableSeats;
+
+    public Showtime(String showtimeId, Movie movie, String time, int availableSeats) {
+        this.showtimeId = showtimeId;
+        this.movie = movie;
+        this.time = time;
+        this.availableSeats = availableSeats;
+    }
+
+    public String getShowtimeId() {
+        return showtimeId;
+    }
+
+    public Movie getMovie() {
+        return movie;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public int getAvailableSeats() {
+        return availableSeats;
+    }
+
+    public void bookSeats(int numSeats) {
+        if (availableSeats >= numSeats) {
+            availableSeats -= numSeats;
+            System.out.println("Seats booked successfully!");
+        } else {
+            System.out.println("Sorry, not enough seats available for the selected showtime.");
+        }
+    }
+
+    public void cancelSeats(int numSeats) {
+        availableSeats += numSeats;
+        System.out.println("Seats canceled successfully.");
+    }
+}
+
+class Booking {
+    private String bookingId;
+    private Showtime showtime;
+    private int numSeats;
+
+    public Booking(String bookingId, Showtime showtime, int numSeats) {
+        this.bookingId = bookingId;
+        this.showtime = showtime;
+        this.numSeats = numSeats;
+    }
+
+    public String getBookingId() {
+        return bookingId;
+    }
+
+    public Showtime getShowtime() {
+        return showtime;
+    }
+
+    public int getNumSeats() {
+        return numSeats;
+    }
+}
+
+class MovieTicketBookingSystem {
+    private List<Movie> movies = new ArrayList<>();
+    private List<Showtime> showtimes = new ArrayList<>();
+    private List<Booking> bookings = new ArrayList<>();
+
+    public void addMovie(Movie movie) {
+        movies.add(movie);
+    }
+
+    public void addShowtime(Showtime showtime) {
+        showtimes.add(showtime);
+    }
+
+    public void displayMovies() {
+        System.out.println("Available Movies:");
+        for (Movie movie : movies) {
+            System.out.println(movie.getMovieId() + " - " + movie.getTitle());
+        }
+        System.out.println();
+    }
+
+    public void displayShowtimes() {
+        System.out.println("Available Showtimes:");
+        for (Showtime showtime : showtimes) {
+            System.out.println(
+                    showtime.getShowtimeId() + " - " + showtime.getMovie().getTitle() + " - Time: " + showtime.getTime()
+                            + " - Available Seats: " + showtime.getAvailableSeats());
+        }
+        System.out.println();
+    }
+
+    public Booking bookSeats(String showtimeId, int numSeats) {
+        Showtime showtime = findShowtimeById(showtimeId);
+        if (showtime != null) {
+            if (showtime.getAvailableSeats() >= numSeats) {
+                Booking booking = new Booking("B001", showtime, numSeats);
+                showtime.bookSeats(numSeats);
+                bookings.add(booking);
+                System.out.println("Booking successful! Booking ID: " + booking.getBookingId());
+                return booking;
+            } else {
+                System.out.println("Not enough seats available for the selected showtime.");
+            }
+        } else {
+            System.out.println("Showtime not found. Please enter a valid showtime ID.");
+        }
+        return null;
+    }
+
+    public void cancelBooking(String bookingId) {
+        Booking booking = findBookingById(bookingId);
+        if (booking != null) {
+            Showtime showtime = booking.getShowtime();
+            showtime.cancelSeats(booking.getNumSeats());
+            bookings.remove(booking);
+            System.out.println("Booking canceled successfully.");
+        } else {
+            System.out.println("Booking not found. Please enter a valid booking ID.");
+        }
+    }
+
+    private Showtime findShowtimeById(String showtimeId) {
+        for (Showtime showtime : showtimes) {
+            if (showtime.getShowtimeId().equals(showtimeId)) {
+                return showtime;
+            }
+        }
+        return null;
+    }
+
+    private Booking findBookingById(String bookingId) {
+        for (Booking booking : bookings) {
+            if (booking.getBookingId().equals(bookingId)) {
+                return booking;
+            }
+        }
+        return null;
+    }
+}
+
+public class MovieTicketBookingDemo {
+    public static void main(String[] args) {
+        MovieTicketBookingSystem bookingSystem = new MovieTicketBookingSystem();
+
+        Movie movie1 = new Movie("M001", "Inception");
+        Movie movie2 = new Movie("M002", "The Dark Knight");
+
+        bookingSystem.addMovie(movie1);
+        bookingSystem.addMovie(movie2);
+
+        Showtime showtime1 = new Showtime("S001", movie1, "10:00 AM", 50);
+        Showtime showtime2 = new Showtime("S002", movie2, "02:30 PM", 30);
+
+        bookingSystem.addShowtime(showtime1);
+        bookingSystem.addShowtime(showtime2);
+
+        bookingSystem.displayMovies();
+        bookingSystem.displayShowtimes();
+
+        // Book seats
+        Booking booking1 = bookingSystem.bookSeats("S001", 2);
+        Booking booking2 = bookingSystem.bookSeats("S002", 3);
+
+        // Display bookings
+        System.out.println("Current Bookings:");
+        System.out.println("Booking ID: " + booking1.getBookingId() + " - Movie: " + booking1.getShowtime().getMovie().getTitle());
+        System.out.println("Booking ID: " + booking2.getBookingId() + " - Movie: " + booking2.getShowtime().getMovie().getTitle());
+
+        // Cancel booking
+        bookingSystem.cancelBooking("B001");
+
+        // Display updated showtimes
+        bookingSystem.displayShowtimes();
+    }
+}
