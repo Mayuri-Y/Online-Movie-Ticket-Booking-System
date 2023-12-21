@@ -1,0 +1,35 @@
+public class MovieTicketBookingDemo {
+    public static void main(String[] args) {
+        MovieTicketBookingSystem bookingSystem = new MovieTicketBookingSystem();
+
+        Movie movie1 = new Movie("M001", "Inception");
+        Movie movie2 = new Movie("M002", "The Dark Knight");
+
+        bookingSystem.addMovie(movie1);
+        bookingSystem.addMovie(movie2);
+
+        Showtime showtime1 = new Showtime("S001", movie1, "10:00 AM", 50);
+        Showtime showtime2 = new Showtime("S002", movie2, "02:30 PM", 30);
+
+        bookingSystem.addShowtime(showtime1);
+        bookingSystem.addShowtime(showtime2);
+
+        bookingSystem.displayMovies();
+        bookingSystem.displayShowtimes();
+
+        // Book seats
+        Booking booking1 = bookingSystem.bookSeats("S001", 2);
+        Booking booking2 = bookingSystem.bookSeats("S002", 3);
+
+        // Display bookings
+        System.out.println("Current Bookings:");
+        System.out.println("Booking ID: " + booking1.getBookingId() + " - Movie: " + booking1.getShowtime().getMovie().getTitle());
+        System.out.println("Booking ID: " + booking2.getBookingId() + " - Movie: " + booking2.getShowtime().getMovie().getTitle());
+
+        // Cancel booking
+        bookingSystem.cancelBooking("B001");
+
+        // Display updated showtimes
+        bookingSystem.displayShowtimes();
+    }
+}
